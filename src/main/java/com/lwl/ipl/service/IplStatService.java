@@ -38,6 +38,6 @@ public interface IplStatService {
 
 	public boolean deletePlayer(String label);
 
-	public List<Player> getAllPlayers();
+	
 
 }

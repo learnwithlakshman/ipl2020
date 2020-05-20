@@ -1,6 +1,6 @@
 package com.lwl.ipl.dto;
 
 public interface ITeamAmountDTO {
-	String getTeamLabel();
+	String getRole();
 	double getAmount();
 }

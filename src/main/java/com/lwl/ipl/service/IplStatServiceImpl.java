@@ -1,7 +1,9 @@
 package com.lwl.ipl.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.internal.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +40,18 @@ public class IplStatServiceImpl implements IplStatService {
 
 	@Override
 	public List<PlayerDTO> getPlayersByTeam(String teamLabel) {
-		// TODO Auto-generated method stub
-		return null;
+		List<PlayerDTO> players = new ArrayList<PlayerDTO>();
+		Assert.notNull(teamLabel, "Team label can't be empty or null");
+		log.info("Looking players for the team label:{}",teamLabel);
+		players = iplStatDao.getPlayersByTeam(teamLabel);
+		if(players != null) {
+			log.info("Total players found for the :{} is {}",teamLabel,players.size());
+			return players;
+		}else {
+			log.info("Label is not found or Team with label {}  there no players",teamLabel);
+		}
+	
+		return players;
 	}
 
 	@Override
@@ -108,11 +120,6 @@ public class IplStatServiceImpl implements IplStatService {
 		return false;
 	}
 
-	@Override
-	public List<Player> getAllPlayers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 
 }

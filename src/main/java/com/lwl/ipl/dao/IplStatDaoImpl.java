@@ -38,8 +38,8 @@ public class IplStatDaoImpl implements IplStatDao{
 
 	@Override
 	public List<PlayerDTO> getPlayersByTeam(String teamLabel) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return commonRepo.getPlayersByTeam(teamLabel);
 	}
 
 	@Override
