@@ -7,6 +7,7 @@ import org.modelmapper.internal.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.lwl.ipl.dao.IplStatDao;
@@ -16,16 +17,16 @@ import com.lwl.ipl.dto.IRoleAmountDTO;
 import com.lwl.ipl.dto.IRoleCountDTO;
 import com.lwl.ipl.dto.MaxAmountDTO;
 import com.lwl.ipl.dto.PlayerDTO;
+import com.lwl.ipl.repo.TeamRepo;
 import com.lwl.ipl.service.exception.TeamAlreadyExistsException;
 
 @Service
 public class IplStatServiceImpl implements IplStatService {
-	
+
 	private Logger log = LoggerFactory.getLogger(IplStatServiceImpl.class);
 
 	private IplStatDao iplStatDao;
-	
-	
+
 	@Autowired
 	public IplStatServiceImpl(IplStatDao iplStatDao) {
 		this.iplStatDao = iplStatDao;
@@ -34,7 +35,7 @@ public class IplStatServiceImpl implements IplStatService {
 	@Override
 	public List<String> allTeamsLables() {
 		List<String> labels = iplStatDao.allTeamsLables();
-		log.info("Total labels count is :{}",labels!=null ? labels.size():0);
+		log.info("Total labels count is :{}", labels != null ? labels.size() : 0);
 		return labels;
 	}
 
@@ -42,15 +43,15 @@ public class IplStatServiceImpl implements IplStatService {
 	public List<PlayerDTO> getPlayersByTeam(String teamLabel) {
 		List<PlayerDTO> players = new ArrayList<PlayerDTO>();
 		Assert.notNull(teamLabel, "Team label can't be empty or null");
-		log.info("Looking players for the team label:{}",teamLabel);
+		log.info("Looking players for the team label:{}", teamLabel);
 		players = iplStatDao.getPlayersByTeam(teamLabel);
-		if(players != null) {
-			log.info("Total players found for the :{} is {}",teamLabel,players.size());
+		if (players != null) {
+			log.info("Total players found for the :{} is {}", teamLabel, players.size());
 			return players;
-		}else {
-			log.info("Label is not found or Team with label {}  there no players",teamLabel);
+		} else {
+			log.info("Label is not found or Team with label {}  there no players", teamLabel);
 		}
-	
+
 		return players;
 	}
 
@@ -67,9 +68,15 @@ public class IplStatServiceImpl implements IplStatService {
 	}
 
 	@Override
-	public List<Player> getByRole(String teamLabel, String role) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public List<PlayerDTO> getByRole(String teamLabel, String role) {
+		List<PlayerDTO> playersList = new ArrayList<>();
+		Assert.notNull(teamLabel, "Team label can't be empty or null");
+		Assert.notNull(role, "Role can't be empty or null");
+		playersList = iplStatDao.getByRole(teamLabel, role);
+		log.info("Total players found for team:{}  of role:  {} is", teamLabel, role,
+				playersList != null ? playersList.size() : 0);
+		return playersList;
 	}
 
 	@Override
@@ -79,9 +86,10 @@ public class IplStatServiceImpl implements IplStatService {
 	}
 
 	@Override
+	@PreAuthorize("hasRole('ADMIN')")
 	public Team addNewTeam(Team team) throws TeamAlreadyExistsException {
 		// TODO Auto-generated method stub
-		return null;
+		return team;
 	}
 
 	@Override
@@ -98,8 +106,7 @@ public class IplStatServiceImpl implements IplStatService {
 
 	@Override
 	public List<Team> getAllTeams() {
-		// TODO Auto-generated method stub
-		return null;
+		return iplStatDao.getAllTeams();
 	}
 
 	@Override
@@ -119,7 +126,5 @@ public class IplStatServiceImpl implements IplStatService {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	
 
 }

@@ -1,11 +1,15 @@
 package com.lwl.ipl.dao;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.lwl.ipl.domain.Player;
+import com.lwl.ipl.domain.PlayerRole;
 import com.lwl.ipl.domain.Team;
 import com.lwl.ipl.dto.IRoleAmountDTO;
 import com.lwl.ipl.dto.IRoleCountDTO;
@@ -15,15 +19,14 @@ import com.lwl.ipl.repo.CommonRepo;
 import com.lwl.ipl.repo.PlayerRepo;
 import com.lwl.ipl.repo.TeamRepo;
 import com.lwl.ipl.service.exception.TeamAlreadyExistsException;
-@Repository
-public class IplStatDaoImpl implements IplStatDao{
 
-	
+@Repository
+public class IplStatDaoImpl implements IplStatDao {
+
 	private PlayerRepo playerRepo;
 	private TeamRepo teamRepo;
 	private CommonRepo commonRepo;
-	
-	
+
 	@Autowired
 	public IplStatDaoImpl(PlayerRepo playerRepo, TeamRepo teamRepo, CommonRepo commonRepo) {
 		this.playerRepo = playerRepo;
@@ -38,7 +41,7 @@ public class IplStatDaoImpl implements IplStatDao{
 
 	@Override
 	public List<PlayerDTO> getPlayersByTeam(String teamLabel) {
-		
+
 		return commonRepo.getPlayersByTeam(teamLabel);
 	}
 
@@ -55,9 +58,19 @@ public class IplStatDaoImpl implements IplStatDao{
 	}
 
 	@Override
-	public List<Player> getByRole(String teamLabel, String role) {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional
+	public List<PlayerDTO> getByRole(String teamLabel, String role) {
+		List<PlayerDTO> dtoList = new ArrayList<PlayerDTO>();
+		List<Player> list = playerRepo.findByPlayerRole(PlayerRole.valueOf(role));
+		for (Player player : list) {
+			if (player.getTeam().getLabel().equals(teamLabel)) {
+				Team team = player.getTeam();
+				PlayerDTO playerDTO = PlayerDTO.builder().name(player.getName()).team(team.getName())
+						.label(team.getLabel()).price(player.getPrice()).build();
+				dtoList.add(playerDTO);
+			}
+		}
+		return dtoList;
 	}
 
 	@Override
@@ -86,8 +99,7 @@ public class IplStatDaoImpl implements IplStatDao{
 
 	@Override
 	public List<Team> getAllTeams() {
-		// TODO Auto-generated method stub
-		return null;
+		return teamRepo.findAll();
 	}
 
 	@Override

@@ -19,7 +19,7 @@ public interface IplStatDao {
 
 	public List<IRoleAmountDTO> getAmountByRole(String teamLabel);
 
-	public List<Player> getByRole(String teamLabel, String role);
+	public List<PlayerDTO> getByRole(String teamLabel, String role);
 	
 	public MaxAmountDTO getMaxAmountByRole();
 

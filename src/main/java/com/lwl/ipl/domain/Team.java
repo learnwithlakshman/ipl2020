@@ -15,6 +15,7 @@ public class Team {
 	private String label;
 	private String name;
 	private String city;
+	private String coach;
 	private String home;
 
 }
